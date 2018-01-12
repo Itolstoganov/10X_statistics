@@ -3,6 +3,7 @@ from joblib import Parallel, delayed
 import os
 import argparse
 import process_stats
+import shutil
 
 
 def createparser():
@@ -23,8 +24,15 @@ args = parser.parse_args()
 
 bam_path = args.bamfile
 output_base = args.output
+if os.path.exists(output_base):
+    shutil.rmtree(output_base)
+os.mkdir(output_base)
+
 tag = args.tag
-dist_list = [500, 1000, 2500, 5000, 10000, 20000]
+small_dist_list = [500, 1000, 2500, 5000, 10000, 20000, 35000, 50000, 100000, 200000, 300000, 500000]
+large_dist_list = [500, 1000, 2500, 5000] + list(range(10000, 205000, 10000))
+dist_list = large_dist_list
+
 test = args.test
 print("Getting stats for distances {}".format(dist_list))
 

@@ -2,7 +2,7 @@ import logging
 import os
 import pickle
 
-import bam_stats
+from bam_statistics import bam_stats
 
 
 class BamStatsPrinter:
@@ -21,7 +21,6 @@ class BamStatsReader:
         self.stats_path = stats_path
 
     def read_bam_stats(self):
-        name_to_class = bam_stats.name_to_class
         files = os.listdir(self.stats_path)
         stats = []
         for filename in files:
@@ -29,5 +28,6 @@ class BamStatsReader:
             name = filename
             with open(os.path.join(self.stats_path, filename), "rb") as fin:
                 data = pickle.load(fin)
-            stats.append(name_to_class[name](data))
+            stat_class = bam_stats.get_class_from_stat_name(name)
+            stats.append(stat_class(data))
         return stats

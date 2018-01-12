@@ -1,3 +1,5 @@
+import sys
+
 
 class BamStats(object):
     def __init__(self, name, data):
@@ -18,11 +20,11 @@ class FragmentLengthDistribution(BamStats):
                                                          data=lengths)
 
 
-class FragmentsPerBarcode(BamStats):
+class FragmentsPerContainer(BamStats):
     # number of fragments:number of such barcodes
     def __init__(self, fragments_per_barcode):
-        super(FragmentsPerBarcode, self).__init__(name="fragments_per_container",
-                                                  data=fragments_per_barcode)
+        super(FragmentsPerContainer, self).__init__(name="fragments_per_container",
+                                                    data=fragments_per_barcode)
 
 
 class InternalCoverageDistribution(BamStats):
@@ -32,18 +34,18 @@ class InternalCoverageDistribution(BamStats):
                                                            data=internal_coverages)
 
 
-class ReadFragmentCoverage(BamStats):
+class ReadsPerFragment(BamStats):
     # number of reads: number of such fragments
     def __init__(self, reads_per_fragment):
-        super(ReadFragmentCoverage, self).__init__(name="reads_per_fragment",
-                                                   data=reads_per_fragment)
+        super(ReadsPerFragment, self).__init__(name="reads_per_fragment",
+                                               data=reads_per_fragment)
 
 
-class ReadBarcodeCoverage(BamStats):
+class ReadsPerContainer(BamStats):
     # number of reads: number of such barcodes
     def __init__(self, reads_per_barcode):
-        super(ReadBarcodeCoverage, self).__init__(name="reads_per_container",
-                                                  data=reads_per_barcode)
+        super(ReadsPerContainer, self).__init__(name="reads_per_container",
+                                                data=reads_per_barcode)
 
 
 class ReadReferenceCoverage(BamStats):
@@ -60,12 +62,29 @@ class FragmentReferenceCoverage(BamStats):
                                                         data=fragment_reference_coverage)
 
 
-name_to_class = {
-    "fragment_length_distribution": FragmentLengthDistribution,
-    "fragments_per_container": FragmentsPerBarcode,
-    "internal_coverage_distribution": InternalCoverageDistribution,
-    "reads_per_fragment": ReadFragmentCoverage,
-    "reads_per_container": ReadBarcodeCoverage,
-    "read_reference_coverage": ReadReferenceCoverage,
-    "fragment_reference_coverage": FragmentReferenceCoverage
-}
+class CoveredReferencesPerBarcode(BamStats):
+    def __init__(self, covered_references_per_barcode):
+        super(CoveredReferencesPerBarcode, self).__init__(name="covered_references_per_barcode",
+                                                          data=covered_references_per_barcode)
+
+
+class GapDistribution(BamStats):
+    def __init__(self, gap_distribution):
+        super(GapDistribution, self).__init__(name="gap_distribution",
+                                              data=gap_distribution)
+
+
+class BarcodeToReads(BamStats):
+    def __init__(self, pair_sizes):
+        super(BarcodeToReads, self).__init__(name="barcode_to_reads", data=pair_sizes)
+
+
+class ScoreDistributions(BamStats):
+    def __init__(self, cov_to_score_distribution):
+        super(ScoreDistributions, self).__init__(name="score_distributions", data=cov_to_score_distribution)
+
+
+
+def get_class_from_stat_name(name):
+    camel_case_name = ''.join(word.capitalize() for word in name.split("_"))
+    return getattr(sys.modules[__name__], camel_case_name)
