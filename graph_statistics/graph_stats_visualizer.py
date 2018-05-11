@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 from operator import itemgetter
+from matplotlib.backends.backend_pdf import PdfPages
+from collections import Counter
+from graph_statistics import initial_filter_stats_processor
+from graph_statistics import short_edge_dataset_processor
+from graph_statistics import long_edge_dataset_processor
+from collections import OrderedDict
 import os
 import numpy as np
 import matplotlib as mpl
@@ -7,13 +13,9 @@ import pandas
 import seaborn as sns
 import operator
 import logging
-from collections import OrderedDict
 
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-from collections import Counter
-from graph_statistics import initial_filter_stats_processor
 
 
 def make_histogram(array, bin_size):
@@ -293,7 +295,9 @@ class GraphStatsVisualizer(object):
 
     @classmethod
     def get_permitted_names(cls):
-        permitted_names = frozenset(["initial_filter_stats", "score_distribution_info", "threshold_distance"])
+        # score_distribution_info
+        permitted_names = frozenset(["initial_filter_stats", "threshold_distance",
+                                     "short_edge_dataset", "long_edge_dataset"])
         return permitted_names
 
     @classmethod
@@ -324,6 +328,28 @@ class GraphStatsVisualizer(object):
             print(top_candidate_statistics)
 
         self.draw_next_distribution(processor.get_next_score_distribution(), self.output_path_)
+
+    def draw_long_edge_dataset(self, long_edge_data, output_suffix):
+        output_path = os.path.join(self.output_path_, output_suffix)
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
+        long_edge_data = long_edge_dataset_processor.prepare_dataset(data=long_edge_data)
+        # long_edge_dataset_processor.draw_2d_plots(data=long_edge_data, output_path=output_path)
+        long_edge_dataset_processor.get_stats(data=long_edge_data)
+        long_edge_dataset_processor.draw_cont_index_histogram(data=long_edge_data, output_path=output_path)
+        long_edge_dataset_processor.draw_violin_plot(data=long_edge_data, output_path=output_path)
+
+    def draw_short_edge_dataset(self, short_edge_data, output_suffix):
+        output_path = os.path.join(self.output_path_, output_suffix)
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
+        # short_data = short_edge_dataset_processor.clean_and_add_columns(short_data=short_edge_data)
+        # short_edge_dataset_processor.draw_violin_plots(short_data=short_data, output_path=output_path)
+        # short_edge_dataset_processor.draw_score_to_params(short_data=short_data, output_path=output_path)
+
+        # short_edge_dataset_processor.test_criterias(data=short_data)
+        # short_edge_dataset_processor.draw_3d_plot(short_data=short_data, output_path=output_path)
+        # short_edge_dataset_processor.launch_svm(data=short_data, output_path=output_path)
 
     def draw_threshold_distance(self, stats, output_suffix):
         output_path = os.path.join(self.output_path_, output_suffix);

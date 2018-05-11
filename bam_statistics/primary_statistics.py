@@ -190,6 +190,8 @@ class BamStatisticsProcessor(object):
     def get_primary_storage(self):
         self.fill_processor_statistics()
 
+        test_reads = 2000000
+
         bamfile = self.bamfile_
         reference_idx = {name: length for (name, length) in zip(bamfile.references, bamfile.lengths)}
         counter = 0
@@ -219,7 +221,7 @@ class BamStatisticsProcessor(object):
             counter += 1
             if counter % 2000000 == 0:
                 logging.info("{} reads processed.".format(counter))
-            if self.params_.test_mode and counter == 500000:
+            if self.params_.test_mode and counter == test_reads:
                 break
 
         logging.info('Total reads: {}'.format(self.stats.mapped + self.stats.unmapped))

@@ -266,6 +266,14 @@ class ShortEdgeDataset(LeafGraphStats):
         self.data_ = pd.read_table(path, sep=',')
 
 
+class LongEdgeDataset(LeafGraphStats):
+    def __init__(self, name):
+        super(LongEdgeDataset, self).__init__(name=name, data={})
+
+    def load_data(self, path):
+        self.data_ = pd.read_table(path, sep=',')
+
+
 NameStructureNode = namedtuple("StructureInternalNode", ["name", "sons"])
 
 
@@ -292,7 +300,8 @@ def get_standard_structure():
     scaffolder_stats = NameStructureNode(name="scaffolder_statistics",
                                          sons=["score_distribution_info",
                                                "threshold_distance",
-                                               "short_edge_dataset"])
+                                               "short_edge_dataset",
+                                               "long_edge_dataset"])
     graph_stats = NameStructureNode(name="barcode_stats",
                                     sons=[cluster_statistics,
                                           contracted_cluster_statistics,

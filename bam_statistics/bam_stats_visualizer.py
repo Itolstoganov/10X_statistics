@@ -134,10 +134,10 @@ class OldBamStatsVisualizer(BaseBamStatsVisualizer):
         plt.ylabel("Fraction of containers with given number of clusters")
         plt.title("Distribution of the number of clusters per container")
         x_right_lim = math.ceil(np.percentile(fragments_list, 95))
-        xrange = (1, x_right_lim)
-
+        xrange = (0, x_right_lim)
         plt.xlim(xrange)
         plt.xticks(np.arange(1, x_right_lim + 1, 2))
+        print(xrange)
         plt.hist(fragments_list, weights=weights, bins=np.arange(x_right_lim + 2), range=xrange,
                  color=self.color)
         plt.savefig(os.path.join(self.output_path, "fragments_per_barcode"))

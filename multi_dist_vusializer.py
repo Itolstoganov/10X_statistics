@@ -85,17 +85,15 @@ class MultiDistVisualizer(object):
 
         number_of_stats = len(next(iter(dist_to_stats.values())))
         for i in range(number_of_stats):
-            print(len(dist_to_stats))
             dist_to_bam_stat = {int(dist): dist_to_stats[dist][i] for dist in dist_to_stats.keys()}
             assert MultiDistVisualizer.check_dist_to_bam_stat(dist_to_bam_stat)
             name = next(iter(dist_to_bam_stat.values())).get_name()
             name_to_method = MultiDistVisualizer.get_name_to_method()
             if name in name_to_method:
                 distribution = {dist: stat.get_data() for (dist, stat) in dist_to_bam_stat.items()}
-                # name_to_method[name](self, distribution, output_suffix)
+                name_to_method[name](self, distribution, output_suffix)
                 if name == "fragment_length_distribution":
                     self.draw_mean_lengths_for_multiple_dists(distribution, output_suffix)
-
 
     def get_filtered_list(self, dictionary):
         raw_list = list(Counter(dictionary).elements())
@@ -105,7 +103,7 @@ class MultiDistVisualizer(object):
     def draw_fragment_length_distributions(self, dist_to_length_distributions, output_suffix):
         dist_list = sorted(self.filter_dist_list(list(dist_to_length_distributions.keys())))
         dist_and_len_list = [(dist, length) for dist in dist_list
-                            for length in self.get_filtered_list(dist_to_length_distributions[dist])]
+                             for length in self.get_filtered_list(dist_to_length_distributions[dist])]
         labels = ["Distance", "Length"]
         len_data_frame = pandas.DataFrame.from_records(dist_and_len_list, columns=labels)
         sns.violinplot(x="Distance", y="Length", data=len_data_frame)
@@ -118,9 +116,8 @@ class MultiDistVisualizer(object):
     def draw_fragments_per_container(self, dist_to_fragments_per_container, output_suffix):
         dist_list = sorted(self.filter_dist_list(list(dist_to_fragments_per_container.keys())))
         dist_and_cov_list = [(dist, length) for dist in dist_list
-                            for length in self.get_filtered_list(dist_to_fragments_per_container[dist])]
+                             for length in self.get_filtered_list(dist_to_fragments_per_container[dist])]
         labels = ["Distance", "Clusters"]
-        print(len(dist_and_cov_list))
         cov_data_frame = pandas.DataFrame.from_records(dist_and_cov_list, columns=labels)
         sns.boxplot(x="Distance", y="Clusters", data=cov_data_frame)
         plt.xlabel("Distance")
@@ -134,7 +131,6 @@ class MultiDistVisualizer(object):
         dist_and_cov_list = [(dist, length) for dist in dist_list for length in
                              self.get_filtered_list(dist_to_initial_coverage_distributions[dist])]
         labels = ["Distance", "Coverage"]
-        print(len(dist_and_cov_list))
         cov_data_frame = pandas.DataFrame.from_records(dist_and_cov_list, columns=labels)
         sns.violinplot(x="Distance", y="Coverage", data=cov_data_frame)
         plt.xlabel("Distance")
@@ -144,9 +140,9 @@ class MultiDistVisualizer(object):
         plt.clf()
 
     def draw_mean_lengths_for_multiple_dists(self, dist_to_length_distributions, output_suffix):
-        print(len(dist_to_length_distributions))
+        dist_list = sorted(self.filter_dist_list(list(dist_to_length_distributions.keys())))
         dist_to_mean = sorted({dist: np.mean(list(Counter(dist_to_length_distributions[dist]).elements()))
-                         for dist in dist_to_length_distributions.keys()}.items())
+                               for dist in dist_list}.items())
         x, y = zip(*dist_to_mean)
         plt.plot(x, y)
         plt.xlabel("Distance")
@@ -176,13 +172,12 @@ if __name__ == "__main__":
 
     print("Input", base_input_path)
     stats_paths = select_stats(base_input_path=base_input_path, prefix="dist", stats_prefix="stats")
-    print(stats_paths)
     multireader = MultiStatsReader(stats_paths)
     dist_to_stats = multireader.read_dist_to_stats()
     print(len(dist_to_stats))
 
     very_large_dist_range = (100000, 500000)
-    large_dist_range = (10000, 100000)
+    large_dist_range = (10000, 70000)
     small_dist_range = (500, 5000)
     print("Drawing plots for very large distances")
     multivisualizer = MultiDistVisualizer(output_path=output_path, dist_range=very_large_dist_range)
